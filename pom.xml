@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.springframework.data</groupId>
+	<groupId>com.github.luxoft-iop</groupId>
 	<artifactId>spring-data-elasticsearch</artifactId>
 	<version>1.0.0.BUILD-SNAPSHOT</version>
 
@@ -14,9 +14,9 @@
 		<relativePath>../spring-data-build/parent/pom.xml</relativePath>
 	</parent>
 
-	<name>Spring Data Elasticsearch</name>
-	<description>Spring Data Implementation for Elasticsearch</description>
-	<url>https://github.com/SpringSource/spring-data-elasticsearch</url>
+	<name>Spring Data Elasticsearch By Luxoft IOP</name>
+	<description>Spring Data Implementation for Elasticsearch By Luxoft IOP</description>
+	<url>https://github.com/luxoft-iop/spring-data-elasticsearch</url>
 
 	<properties>
 
@@ -134,39 +134,32 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>wagon-maven-plugin</artifactId>
 			</plugin>
-		</plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
+        </plugins>
 	</build>
 
-	<developers>
-		<developer>
-			<id>biomedcentral</id>
-			<name>BioMed Central Development Team</name>
-			<timezone>+0</timezone>
-		</developer>
-	</developers>
+    <repositories>
+        <repository>
+            <id>spring-libs-snapshot</id>
+            <url>http://repo.springsource.org/lib-snapshot-local</url>
+        </repository>
+    </repositories>
 
-	<repositories>
-		<repository>
-			<id>spring-libs-snapshot</id>
-			<url>http://repo.springsource.org/lib-snapshot-local</url>
-		</repository>
-	</repositories>
-
-	<scm>
-		<url>https://github.com/SpringSource/spring-data-elasticsearch</url>
-		<connection>scm:git:git://github.com/SpringSource/spring-data-elasticsearch.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com:SpringSource/spring-data-elasticsearch.git
-        </developerConnection>
-	</scm>
-
-	<ciManagement>
-		<system>Bamboo</system>
-		<url>http://build.springsource.org/browse/SPRINGDATAES</url>
-	</ciManagement>
-
-	<issueManagement>
-		<system>JIRA</system>
-		<url>https://jira.springsource.org/browse/DATAES</url>
-	</issueManagement>
-
+    <distributionManagement>
+        <repository>
+            <id>repo</id>
+            <url>https://github.com/luxoft-iop/spring-data-elasticsearch-repo/raw/master/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshot-repo</id>
+            <url>https://github.com/luxoft-iop/spring-data-elasticsearch-repo/raw/master/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
