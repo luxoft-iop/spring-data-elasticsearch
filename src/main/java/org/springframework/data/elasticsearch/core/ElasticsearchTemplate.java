@@ -79,6 +79,7 @@ import static org.springframework.data.elasticsearch.core.MappingBuilder.buildMa
  *
  * @author Rizwan Idrees
  * @author Mohsin Husen
+ * @author Maksim Sidorov
  */
 
 public class ElasticsearchTemplate implements ElasticsearchOperations {
@@ -114,7 +115,7 @@ public class ElasticsearchTemplate implements ElasticsearchOperations {
 
         try {
             XContentBuilder xContentBuilder = buildMapping(clazz, persistentEntity.getIndexType(), persistentEntity
-                    .getIdProperty().getFieldName());
+                    .getIdProperty().getFieldName(), elasticsearchConverter.getMappingContext());
             return requestBuilder.setSource(xContentBuilder).execute().actionGet().isAcknowledged();
         } catch (Exception e) {
             throw new ElasticsearchException("Failed to build mapping for " + clazz.getSimpleName(), e);
@@ -490,6 +491,10 @@ public class ElasticsearchTemplate implements ElasticsearchOperations {
 
             IndexRequestBuilder indexRequestBuilder = client.prepareIndex(indexName, type, query.getId()).setSource(
                     objectMapper.writeValueAsString(query.getObject()));
+
+            if (query.getParentId() != null) {
+                indexRequestBuilder.setParent(query.getParentId());
+            }
 
             if (query.getVersion() != null) {
                 indexRequestBuilder.setVersion(query.getVersion());

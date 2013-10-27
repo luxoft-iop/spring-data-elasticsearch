@@ -22,6 +22,7 @@ import org.springframework.data.mapping.PersistentEntity;
  * 
  * @author Rizwan Idrees
  * @author Mohsin Husen
+ * @author Maksim Sidorov
  */
 
 public interface ElasticsearchPersistentEntity<T> extends PersistentEntity<T, ElasticsearchPersistentProperty> {
@@ -37,6 +38,8 @@ public interface ElasticsearchPersistentEntity<T> extends PersistentEntity<T, El
 	String getRefreshInterval();
 
 	String getIndexStoreType();
+
+    ElasticsearchPersistentProperty getParentIdProperty();
 
 	ElasticsearchPersistentProperty getVersionProperty();
 }

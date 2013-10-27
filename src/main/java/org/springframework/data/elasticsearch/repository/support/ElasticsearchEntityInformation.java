@@ -25,6 +25,7 @@ import java.io.Serializable;
  * 
  * @author Rizwan Idrees
  * @author Mohsin Husen
+ * @author Maksim Sidorov
  */
 public interface ElasticsearchEntityInformation<T, ID extends Serializable> extends EntityInformation<T, ID> {
 
@@ -33,6 +34,8 @@ public interface ElasticsearchEntityInformation<T, ID extends Serializable> exte
 	String getIndexName();
 
 	String getType();
+
+    ID getParentId(T t);
 
 	Long getVersion(T entity);
 }

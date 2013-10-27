@@ -15,8 +15,6 @@
  */
 package org.springframework.data.elasticsearch.repository.support;
 
-import java.io.Serializable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.elasticsearch.core.mapping.ElasticsearchPersistentEntity;
@@ -24,6 +22,8 @@ import org.springframework.data.elasticsearch.core.mapping.ElasticsearchPersiste
 import org.springframework.data.mapping.model.BeanWrapper;
 import org.springframework.data.repository.core.support.AbstractEntityInformation;
 import org.springframework.util.Assert;
+
+import java.io.Serializable;
 
 /**
  * Elasticsearch specific implementation of
@@ -35,6 +35,7 @@ import org.springframework.util.Assert;
  * @author Rizwan Idrees
  * @author Mohsin Husen
  * @author Ryan Henszey
+ * @author Maksim Sidorov
  */
 public class MappingElasticsearchEntityInformation<T, ID extends Serializable> extends AbstractEntityInformation<T, ID>
 		implements ElasticsearchEntityInformation<T, ID> {
@@ -67,6 +68,20 @@ public class MappingElasticsearchEntityInformation<T, ID extends Serializable> e
 			throw new IllegalStateException("ID could not be resolved", e);
 		}
 	}
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public ID getParentId(T entity) {
+        ElasticsearchPersistentProperty id = entityMetadata.getParentIdProperty();
+        if (id == null) {
+            return null;
+        }
+        try {
+            return (ID) BeanWrapper.create(entity, null).getProperty(id);
+        } catch (Exception e) {
+            throw new IllegalStateException("Parent ID could not be resolved", e);
+        }
+    }
 
 	@SuppressWarnings("unchecked")
 	@Override

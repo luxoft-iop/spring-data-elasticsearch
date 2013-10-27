@@ -18,6 +18,9 @@ package org.springframework.data.elasticsearch.core;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.springframework.data.elasticsearch.annotations.*;
 import org.springframework.data.elasticsearch.core.facet.FacetRequest;
+import org.springframework.data.elasticsearch.core.mapping.ElasticsearchPersistentEntity;
+import org.springframework.data.elasticsearch.core.mapping.ElasticsearchPersistentProperty;
+import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.mapping.model.SimpleTypeHolder;
 import org.springframework.data.util.ClassTypeInformation;
 import org.springframework.data.util.TypeInformation;
@@ -33,6 +36,7 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
  * @author Rizwan Idrees
  * @author Mohsin Husen
  * @author Artur Konczak
+ * @author Maksim Sidorov
  */
 
 class MappingBuilder {
@@ -48,14 +52,32 @@ class MappingBuilder {
     public static final String TYPE_VALUE_STRING = "string";
     public static final String TYPE_VALUE_OBJECT = "object";
 
+    public static final String PARENT_FIELD = "_parent";
+    public static final String PARENT_FIELD_TYPE = "type";
+
     private static SimpleTypeHolder SIMPLE_TYPE_HOLDER = new SimpleTypeHolder();
 
-    static XContentBuilder buildMapping(Class clazz, String indexType, String idFieldName) throws IOException {
+    static XContentBuilder buildMapping(Class clazz, String indexType, String idFieldName,
+                                        MappingContext<? extends ElasticsearchPersistentEntity<?>, ElasticsearchPersistentProperty> mappingContext) throws IOException {
         XContentBuilder xContentBuilder = jsonBuilder().startObject().startObject(indexType).startObject(FIELD_PROPERTIES);
 
         mapEntity(xContentBuilder, clazz, true, idFieldName, EMPTY);
 
-        return xContentBuilder.endObject().endObject().endObject();
+        xContentBuilder.endObject(); // end FIELD_PROPERTIES
+
+        mapParentField(clazz, mappingContext, xContentBuilder);
+
+        return xContentBuilder.endObject().endObject();
+    }
+
+    private static void mapParentField(Class clazz, MappingContext<? extends ElasticsearchPersistentEntity<?>, ElasticsearchPersistentProperty> mappingContext, XContentBuilder xContentBuilder) throws IOException {
+        ParentId parentId = getParentIdAnnotation(clazz.getDeclaredFields());
+        if (parentId != null) {
+            ElasticsearchPersistentEntity<?> parentPersistentEntity = mappingContext.getPersistentEntity(parentId.type());
+            if (parentPersistentEntity != null) {
+                xContentBuilder.startObject(PARENT_FIELD).field(PARENT_FIELD_TYPE, parentPersistentEntity.getIndexType()).endObject();
+            }
+        }
     }
 
     private static void mapEntity(XContentBuilder xContentBuilder, Class clazz, boolean isRootObject, String idFieldName,
@@ -221,6 +243,18 @@ class MappingBuilder {
             }
         }
         return false;
+    }
+
+    private static ParentId getParentIdAnnotation(java.lang.reflect.Field[] fields) {
+        if (fields != null) {
+            for (java.lang.reflect.Field field : fields) {
+                ParentId parentId = field.getAnnotation(ParentId.class);
+                if (parentId != null) {
+                    return parentId;
+                }
+            }
+        }
+        return null;
     }
 
     private static boolean isIdField(java.lang.reflect.Field field, String idFieldName) {

@@ -20,11 +20,13 @@ package org.springframework.data.elasticsearch.core.query;
  * 
  * @author Rizwan Idrees
  * @author Mohsin Husen
+ * @author Maksim Sidorov
  */
 
 public class IndexQuery {
 
-	private String id;
+    private String id;
+    private String parentId;
 	private Object object;
 	private Long version;
 	private String indexName;
@@ -37,6 +39,14 @@ public class IndexQuery {
 	public void setId(String id) {
 		this.id = id;
 	}
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
 
 	public Object getObject() {
 		return object;

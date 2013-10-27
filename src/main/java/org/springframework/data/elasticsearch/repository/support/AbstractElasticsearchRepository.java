@@ -44,6 +44,7 @@ import static org.springframework.data.elasticsearch.core.query.Query.DEFAULT_PA
  * @author Rizwan Idrees
  * @author Mohsin Husen
  * @author Ryan Henszey
+ * @author Maksim Sidorov
  */
 public abstract class AbstractElasticsearchRepository<T, ID extends Serializable> implements
 		ElasticsearchRepository<T, ID> {
@@ -243,6 +244,7 @@ public abstract class AbstractElasticsearchRepository<T, ID extends Serializable
 		IndexQuery query = new IndexQuery();
 		query.setObject(entity);
 		query.setId(stringIdRepresentation(extractIdFromBean(entity)));
+        query.setParentId(stringIdRepresentation(extractParentIdFromBean(entity)));
 		query.setVersion(extractVersionFromBean(entity));
 		return query;
 	}
@@ -290,12 +292,19 @@ public abstract class AbstractElasticsearchRepository<T, ID extends Serializable
 		this.elasticsearchOperations = elasticsearchOperations;
 	}
 
-	protected ID extractIdFromBean(T entity) {
-		if (entityInformation != null) {
-			return entityInformation.getId(entity);
-		}
-		return null;
-	}
+    protected ID extractIdFromBean(T entity) {
+        if (entityInformation != null) {
+            return entityInformation.getId(entity);
+        }
+        return null;
+    }
+
+    protected ID extractParentIdFromBean(T entity) {
+        if (entityInformation != null) {
+            return entityInformation.getParentId(entity);
+        }
+        return null;
+    }
 
 	protected abstract String stringIdRepresentation(ID id);
 

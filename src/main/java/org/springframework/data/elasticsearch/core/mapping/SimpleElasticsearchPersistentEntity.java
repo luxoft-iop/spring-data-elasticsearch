@@ -21,6 +21,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.expression.BeanFactoryAccessor;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.ParentId;
 import org.springframework.data.mapping.model.BasicPersistentEntity;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.util.TypeInformation;
@@ -38,6 +39,7 @@ import static org.springframework.util.StringUtils.hasText;
  * 
  * @author Rizwan Idrees
  * @author Mohsin Husen
+ * @author Maksim Sidorov
  */
 public class SimpleElasticsearchPersistentEntity<T> extends BasicPersistentEntity<T, ElasticsearchPersistentProperty>
 		implements ElasticsearchPersistentEntity<T>, ApplicationContextAware {
@@ -49,6 +51,7 @@ public class SimpleElasticsearchPersistentEntity<T> extends BasicPersistentEntit
 	private short replicas;
 	private String refreshInterval;
 	private String indexStoreType;
+    private ElasticsearchPersistentProperty parentIdProperty;
 
 	public SimpleElasticsearchPersistentEntity(TypeInformation<T> typeInformation) {
 		super(typeInformation);
@@ -89,7 +92,12 @@ public class SimpleElasticsearchPersistentEntity<T> extends BasicPersistentEntit
 		return indexStoreType;
 	}
 
-	@Override
+    @Override
+    public ElasticsearchPersistentProperty getParentIdProperty() {
+        return parentIdProperty;
+    }
+
+    @Override
 	public short getShards() {
 		return shards;
 	}
@@ -110,5 +118,8 @@ public class SimpleElasticsearchPersistentEntity<T> extends BasicPersistentEntit
 		if (property.isVersionProperty()) {
 			Assert.isTrue(property.getType() == Long.class, "Version property should be Long");
 		}
+        if (parentIdProperty == null && property.getField().getAnnotation(ParentId.class) != null) {
+            parentIdProperty = property;
+        }
 	}
 }
