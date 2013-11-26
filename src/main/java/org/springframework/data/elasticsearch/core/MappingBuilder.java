@@ -16,6 +16,8 @@
 package org.springframework.data.elasticsearch.core;
 
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.elasticsearch.annotations.*;
 import org.springframework.data.elasticsearch.core.facet.FacetRequest;
 import org.springframework.data.elasticsearch.core.mapping.ElasticsearchPersistentEntity;
@@ -90,6 +92,9 @@ class MappingBuilder {
         }
 
         for (java.lang.reflect.Field field : fields) {
+            if (field.isAnnotationPresent(Transient.class) || field.isAnnotationPresent(Id.class) || field.isAnnotationPresent(ParentId.class)) {
+                continue;
+            }
             if (isEntity(field)) {
                 mapEntity(xContentBuilder, field.getType(), false, EMPTY, field.getName());
             }
