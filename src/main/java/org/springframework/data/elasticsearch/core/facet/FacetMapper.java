@@ -2,6 +2,7 @@ package org.springframework.data.elasticsearch.core.facet;
 
 import org.elasticsearch.search.facet.Facet;
 import org.elasticsearch.search.facet.range.RangeFacet;
+import org.elasticsearch.search.facet.statistical.StatisticalFacet;
 import org.elasticsearch.search.facet.terms.TermsFacet;
 import org.springframework.data.elasticsearch.core.facet.result.Range;
 import org.springframework.data.elasticsearch.core.facet.result.RangeResult;
@@ -13,6 +14,7 @@ import java.util.List;
 
 /**
  * @author Artur Konczak
+ * @author Maksym Sydorov
  */
 public class FacetMapper {
 
@@ -23,6 +25,10 @@ public class FacetMapper {
 
         if (facet instanceof RangeFacet) {
             return parseRange((RangeFacet) facet);
+        }
+
+        if (facet instanceof StatisticalFacet) {
+            return parseStatistical((StatisticalFacet) facet);
         }
 
         return null;
@@ -42,6 +48,11 @@ public class FacetMapper {
             entries.add(new Range(entry.getFrom() == Double.NEGATIVE_INFINITY ? null : entry.getFrom(), entry.getTo() == Double.POSITIVE_INFINITY ? null : entry.getTo(), entry.getCount(), entry.getTotal(), entry.getTotalCount(), entry.getMin(), entry.getMax()));
         }
         return new RangeResult(facet.getName(), entries);
+    }
+
+    private static StatisticalResult parseStatistical(StatisticalFacet facet) {
+        // Temp solution for StatisticalResult, need complete implementation
+        return new StatisticalResult(facet.getName(), facet);
     }
 
 }
