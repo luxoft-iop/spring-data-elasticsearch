@@ -553,7 +553,7 @@ public class ElasticsearchTemplate implements ElasticsearchOperations {
                     }
                 }
 
-                return new FacetedPageImpl<T>(results, pageable, totalHits, facets);
+                return new FacetedPageImpl<T>(results, pageable, totalHits, facets, response.getHits());
             }
         };
         return resultsMapper.mapResults(response);
